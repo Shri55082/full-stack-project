@@ -1,54 +1,48 @@
-// Sample data for major cities, hotels, and rooms (replace this with actual data from the backend)
-const cities = ['New York', 'London', 'Tokyo'];
-const hotels = {
-    'New York': ['Hotel A', 'Hotel B', 'Hotel C'],
-    'London': ['Hotel X', 'Hotel Y', 'Hotel Z'],
-    'Tokyo': ['Hotel P', 'Hotel Q', 'Hotel R'],
-};
-const rooms = {
-    'Hotel A': 10,
-    'Hotel B': 5,
-    'Hotel C': 3,
-    'Hotel X': 8,
-    'Hotel Y': 2,
-    'Hotel Z': 4,
-    'Hotel P': 6,
-    'Hotel Q': 7,
-    'Hotel R': 9,
-};
+const qrText = document.getElementById('qr-text');
+const sizes = document.getElementById('sizes');
+const generateBtn = document.getElementById('generateBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const qrContainer = document.querySelector('.qr-body');
 
-// Function to display cities
-function displayCities() {
-    const citiesSection = document.getElementById('cities');
-    cities.forEach(city => {
-        const cityButton = document.createElement('button');
-        cityButton.textContent = city;
-        cityButton.addEventListener('click', () => displayHotels(city));
-        citiesSection.appendChild(cityButton);
+let size = sizes.value;
+generateBtn.addEventListener('click',(e)=>{
+    e.preventDefault();
+    isEmptyInput();
+});
+
+sizes.addEventListener('change',(e)=>{
+    size = e.target.value;
+    isEmptyInput();
+});
+
+downloadBtn.addEventListener('click', ()=>{
+    let img = document.querySelector('.qr-body img');
+
+    if(img !== null){
+        let imgAtrr = img.getAttribute('src');
+        downloadBtn.setAttribute("href", imgAtrr);
+    }
+    else{
+        downloadBtn.setAttribute("href", `${document.querySelector('canvas').toDataURL()}`);
+    }
+});
+
+function isEmptyInput(){
+    // if(qrText.value.length > 0){
+    //     generateQRCode();
+    // }
+    // else{
+    //     alert("Enter the text or URL to generate your QR code");
+    // }
+    qrText.value.length > 0 ? generateQRCode() : alert("Enter the text or URL to generate your QR code");;
+}
+function generateQRCode(){
+    qrContainer.innerHTML = "";
+    new QRCode(qrContainer, {
+        text:qrText.value,
+        height:size,
+        width:size,
+        colorLight:"#fff",
+        colorDark:"#000",
     });
 }
-
-// Function to display hotels for a selected city
-function displayHotels(city) {
-    const hotelsSection = document.getElementById('hotels');
-    hotelsSection.innerHTML = ''; // Clear previous content
-    hotels[city].forEach(hotel => {
-        const hotelButton = document.createElement('button');
-        hotelButton.textContent = hotel;
-        hotelButton.addEventListener('click', () => displayRooms(hotel));
-        hotelsSection.appendChild(hotelButton);
-    });
-}
-
-// Function to display available rooms for a selected hotel
-function displayRooms(hotel) {
-    const roomsSection = document.getElementById('rooms');
-    roomsSection.innerHTML = ''; // Clear previous content
-    const availableRooms = rooms[hotel];
-    const roomInfo = document.createElement('p');
-    roomInfo.textContent = `Available rooms at ${hotel}: ${availableRooms}`;
-    roomsSection.appendChild(roomInfo);
-}
-
-// Call the displayCities() function to show cities on page load
-displayCities();
